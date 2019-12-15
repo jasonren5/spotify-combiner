@@ -44,12 +44,39 @@ async function getPlaylists() {
 }
 
 function renderPlaylists(playlists) {
-    let names = "",
-        buttons = "";
+    console.log("rendering playlists");
+    let $list = $("#all-list .list").first();
+    console.log($list);
+    $list.empty();
+    let $buttonList = $("#add-to-col");
+    console.log($buttonList);
+    $buttonList.empty();
 
-    // for (let i = 0; playlists.length; i++) {
-    //     names += "<"
-    // }
+    for (let i = 0; i < playlists.length; i++) {
+        let $card = $('<div>', {
+            playlist_id: playlists[i].id
+        });
+
+        //append image
+        $card.append($('<img>', {
+            playlist_id: playlists[i].id,
+            src: playlists[i].images[playlists[i].images.length - 1].url,
+            height: 60,
+            width: 60
+        }));
+        //append name
+        $card.append($('<span>', {
+            text: playlists[i].name,
+            playlist_id: playlists[i].id,
+        }));
+
+        $list.append($card);
+        //console.log(playlists[i].name);
+    }
+
+
+    //TODO: need to add listeners to all playlist buttons
+    console.log("done rendering playlists");
 }
 
 
@@ -68,6 +95,6 @@ async function loginSuccess(data) {
     console.log("playlists: ");
     console.log(playlists);
 
-    //renderPlaylists(playlists);
+    renderPlaylists(playlists);
 
 }
