@@ -6,3 +6,5 @@ Spotify scopes used:
     * Needed to see currently playing track.
 * playlist-read-collaborative:
     * Needed to get list of user's playlists.
+* user-read-private
+    * needed to check user's Spotify subscription, as the app only works with Spotify Premium subscribers.
