@@ -1,18 +1,99 @@
-console.log("test js");
-let client_id = '56a9a71a5af2441f99b9908d26ac8970';
-let client_secret = '3fdbad3eaffc4d809bc28146ba9d5fd8';
+/* primary script file for main.html */
 
 
-$("#login-button").on("click", function() {
-    console.log("button click");
-    let scope = 'streaming user-read-playback-state playlist-read-collaborative';
-    let redirect_uri = window.location.href;
-    console.log(window.location.href);
 
-    var url = 'https://accounts.spotify.com/authorize';
-    url += '?response_type=token';
-    url += '&client_id=' + encodeURIComponent(client_id);
-    url += '&scope=' + encodeURIComponent(scope);
-    url += '&redirect_uri=' + encodeURIComponent(redirect_uri);
-    window.location = url;
+$(document).ready(function () {
+    let params = getHashParams();
+    console.log(params);
+    access_token = params.access_token;
+
+    //if user is not logged in, access token is false
+    if (access_token) {
+        console.log("logged in");
+        $("#not-logged-in").hide();
+        $("#logged-in").show();
+
+        let userProfilePlaceholder = document.getElementById("userprofile");
+        //ajax to api to request profile
+        $.ajax({
+            url: 'https://api.spotify.com/v1/me',
+            headers: {
+                'Authorization': 'Bearer ' + access_token
+            },
+            success: function (response) {
+                $('#login').hide();
+                $('#loggedin').show();
+                loginSuccess(response);
+            }
+        });
+    } else {
+        $("#not-logged-in").show();
+        $("#logged-in").hide();
+    }
 });
+
+//grabs list of user's playlists and returns the .items of the request (array of the actual playlists)
+async function getPlaylists() {
+    const result = await $.ajax({
+        url: 'https://api.spotify.com/v1/me/playlists',
+        headers: {
+            'Authorization': 'Bearer ' + access_token
+        },
+        error: function () {
+            console.log("error fetching playlists!");
+            return;
+        }
+    });
+
+    return result.items;
+}
+
+function renderPlaylists(playlists) {
+    console.log("rendering playlists");
+    let $list = $("#all-list .list").first();
+    console.log($list);
+    $list.empty();
+    let $buttonList = $("#add-to-col");
+    console.log($buttonList);
+    $buttonList.empty();
+
+    for (let i = 0; i < playlists.length; i++) {
+        let $card = $('<div>', {
+            playlist_id: playlists[i].id
+        });
+
+        //append image
+        $card.append($('<img>', {
+            playlist_id: playlists[i].id,
+            src: playlists[i].images[playlists[i].images.length - 1].url,
+            height: 60,
+            width: 60
+        }));
+        //append name
+        $card.append($('<span>', {
+            text: playlists[i].name,
+            playlist_id: playlists[i].id,
+        }));
+
+        $card.append()
+
+        $list.append($card);
+
+    }
+
+
+    //TODO: need to add listeners to all playlist buttons
+    console.log("done rendering playlists");
+}
+
+//is called in document.ready if the access token is defined
+async function loginSuccess(data) {
+    $("#display-name").text(data.display_name);
+
+    let playlists = await getPlaylists();
+
+    //now build playlists
+    console.log("playlists: ");
+    console.log(playlists);
+    renderPlaylists(playlists);
+}
