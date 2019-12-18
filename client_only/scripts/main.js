@@ -1,6 +1,8 @@
 /* primary script file for main.html */
 
-let player;
+
+//variable for the spotify player instance
+//const player;
 
 
 $(document).ready(function () {
@@ -12,7 +14,7 @@ $(document).ready(function () {
 
         //if user is not logged in, access token is false
         if (access_token) {
-            initializeWebPlayer();
+            //initializeWebPlayer();
             console.log("logged in");
             $("#not-logged-in").hide();
             $("#logged-in").show();
@@ -38,8 +40,9 @@ $(document).ready(function () {
 });
 
 //after the SDK is loaded, instantiate the player object
+//cite https://developer.spotify.com/documentation/web-playback-sdk/quick-start/
 function initializeWebPlayer() {
-    player = new Spotify.Player({
+    const player = new Spotify.Player({
         name: 'Easy-DJ Player',
         getOAuthToken: callback => {
             // Run code to get a fresh access token
@@ -47,6 +50,47 @@ function initializeWebPlayer() {
             callback(access_token);
         },
         volume: 0.9
+    });
+
+    // Error handling
+    player.addListener('initialization_error', ({
+        message
+    }) => {
+        console.error(message);
+    });
+    player.addListener('authentication_error', ({
+        message
+    }) => {
+        console.error(message);
+    });
+    player.addListener('account_error', ({
+        message
+    }) => {
+        console.error(message);
+    });
+    player.addListener('playback_error', ({
+        message
+    }) => {
+        console.error(message);
+    });
+
+    // Playback status updates
+    player.addListener('player_state_changed', state => {
+        console.log(state);
+    });
+
+    // Ready
+    player.addListener('ready', ({
+        device_id
+    }) => {
+        console.log('Ready with Device ID', device_id);
+    });
+
+    // Not Ready
+    player.addListener('not_ready', ({
+        device_id
+    }) => {
+        console.log('Device ID has gone offline', device_id);
     });
 
     player.connect().then(success => {
@@ -59,12 +103,11 @@ function initializeWebPlayer() {
 
             //attach listener at element creation
             $button.on("click", function () {
-                playSong()
+                handleStartButton();
             });
             $("#playback-container .col-12").append($button);
         }
-    })
-
+    });
 
 }
 
@@ -82,6 +125,39 @@ async function getPlaylists() {
     });
 
     return result.items;
+}
+
+//grabs list of user's spotify devices
+function populateDevices() {
+    const result = $.ajax({
+        url: 'https://api.spotify.com/v1/me/player/devices',
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + access_token
+        },
+        error: function () {
+            console.log("error fetching devices!");
+            return;
+        }
+    })
+
+    //successfully grabbed devices list
+    result.done(function (data) {
+        console.log(data);
+        let $dropdown = $("#device-dropdown");
+        data.devices.forEach(function (device) {
+            console.log(device);
+            $dropdown.append($("<option>", {
+                value: device.id,
+                text: device.name
+            }));
+        });
+    });
+
+    //failed to grab devices list
+    result.fail(function (jqXHR, textStatus, errorThrown) {
+        console.log(textStatus + ': ' + errorThrown);
+    });
 }
 
 function renderPlaylists(playlists) {
@@ -125,9 +201,15 @@ function renderPlaylists(playlists) {
 //is called in document.ready if the access token is defined
 async function loginSuccess(data) {
     $("#display-name").text(data.display_name);
+    if (data.product == "premium") {
+        console.log("Is premium user");
+    } else {
+        alert("Sorry! The account you logged in with is not a Spotify Premium account. Due to limitiations of the API, this application will only work with Spotify Premium or Family Plan accounts.");
+        return;
+    }
     if (data.images.length > 0) {
-        console.log("image!");
-        console.log(data.images[0].url);
+        //console.log("image!");
+        //console.log(data.images[0].url);
         $("#profile-picture-container").prepend($("<img>", {
             src: data.images[0].url,
             alt: "user profile picture",
@@ -135,16 +217,32 @@ async function loginSuccess(data) {
         }));
     }
 
-    console.log(data);
+
+    //console.log("user data: ");
+    //console.log(data);
+
+    //create device list
+    populatePlayBar();
 
     let playlists = await getPlaylists();
 
     //now build playlists
-    console.log("playlists: ");
-    console.log(playlists);
+    //console.log("playlists: ");
+    //console.log(playlists);
     renderPlaylists(playlists);
 }
 
+
+/*
+    checks all .slider inputs and calculates cumWeight, the sum of all the slider inputs.
+        then calculates a probability for each playlistbetween 0 and 1, 
+        and then assigns them a range from 0 to 1.
+
+    ex: playlist 1 has value 1, playlist 2 has value 2.
+        'range' assigned to playlist 1 is .33, and 'range' for 2 is 1.
+        s.t. a random between 0 and 1 has a .33 chance to fall in playlist 1's range,
+        and a .66 chance to fall in playlist 2's range.
+*/
 function calculatePlaylistWeight() {
     //first find playlists that have a value non-zero, add to cumWeight,
     //then calculate percentage of total values
@@ -171,25 +269,83 @@ function calculatePlaylistWeight() {
 }
 
 //is called when the button is pressed
-function playSong() {
+function handleStartButton() {
     let lists = calculatePlaylistWeight();
+
     if (lists.length == 0) {
         alert("Error: No playlists chosen");
         return;
     }
+
+    //
     let songRand = Math.random();
-    let playlist = -1;
+    let playlistId = -1;
     console.log(songRand);
     for (let i = 0; i < lists.length; i++) {
         if (songRand < lists[i][0]) {
-            playlist = lists[i][1];
+            playlistId = lists[i][1];
             break;
         }
     }
 
-    if (playlist != 0) {
-        console.log(playlist);
-    } else {
-        console.log("error: no playlist detected")
+    if (playlistId == -1) {
+        console.log("error: no playlist detected");
+        return;
     }
+
+    //at this point, playlistId contains a playlist ID
+    //  now turn it into a spotify URI and pass it to playSong
+    //  example uri: spotify:album:1Je1IMUlBXcx1Fz0WE7oPT
+    //  https://developer.spotify.com/documentation/web-api/reference/player/start-a-users-playback/
+
+    let playlist = "spotify:playlist:" + playlistId;
+    console.log(playlist);
+    playSong(playlist);
+
+}
+
+/*
+    playSong sends a request to spotify API to play the given spotify uri
+*/
+function playSong(spotify_uri) {
+    const device = $("#device-dropdown").val();
+    console.log("device id: " + device);
+    console.log("access_token: " + access_token);
+
+    const play = $.ajax({
+        url: 'https://api.spotify.com/v1/me/player/play?device_id=' + encodeURIComponent(device),
+        type: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + access_token
+        },
+        data: JSON.stringify({
+            context_uri: spotify_uri
+        }),
+        success: function (data) {
+            console.log("successfully played song?");
+            console.log(data);
+        },
+        error: function (request, status, error) {
+            console.log("Status: " + status + ", repsonse: " + request.responseText);
+        }
+    });
+}
+
+
+//populates the playbar at the bottom of the page with device list, play button, etc
+function populatePlayBar() {
+    populateDevices();
+
+    //add playbutton
+    let $button = $("<button>", {
+        type: "button",
+        text: "play song"
+    });
+
+    //attach listener at element creation
+    $button.on("click", function () {
+        handleStartButton();
+    });
+    $("#playback-container .col-12").append($button);
 }
