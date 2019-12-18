@@ -8,9 +8,6 @@ This web application can be accessed at my AWS EC2 server: http://ec2-18-191-207
 ## Notes
 
 Spotify scopes used:
-* streaming
-    * Needed to control playback on the application.
-    * Note: User requires a spotify premium account.
 *  user-read-playback-state:
     * Needed to see currently playing track.
 * playlist-read-collaborative:

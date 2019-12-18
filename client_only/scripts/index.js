@@ -4,7 +4,7 @@
 $("#login-button").click(function (event) {
     event.preventDefault();
     console.log("button click");
-    let scope = 'streaming user-read-playback-state playlist-read-collaborative user-read-email user-read-private user-modify-playback-state';
+    let scope = 'user-read-playback-state playlist-read-collaborative user-read-email user-read-private user-modify-playback-state';
     let redirect_uri = window.location.href + "main.html";
     console.log(redirect_uri);
 

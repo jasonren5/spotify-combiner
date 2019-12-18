@@ -1,10 +1,6 @@
 /* primary script file for main.html */
 
 
-//variable for the spotify player instance
-//const player;
-
-
 $(document).ready(function () {
     //waits for playback sdk to be ready... there is probably a better spot for this
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -14,7 +10,6 @@ $(document).ready(function () {
 
         //if user is not logged in, access token is false
         if (access_token) {
-            //initializeWebPlayer();
             console.log("logged in");
             $("#not-logged-in").hide();
             $("#logged-in").show();
@@ -39,77 +34,6 @@ $(document).ready(function () {
     };
 });
 
-//after the SDK is loaded, instantiate the player object
-//cite https://developer.spotify.com/documentation/web-playback-sdk/quick-start/
-function initializeWebPlayer() {
-    const player = new Spotify.Player({
-        name: 'Easy-DJ Player',
-        getOAuthToken: callback => {
-            // Run code to get a fresh access token
-
-            callback(access_token);
-        },
-        volume: 0.9
-    });
-
-    // Error handling
-    player.addListener('initialization_error', ({
-        message
-    }) => {
-        console.error(message);
-    });
-    player.addListener('authentication_error', ({
-        message
-    }) => {
-        console.error(message);
-    });
-    player.addListener('account_error', ({
-        message
-    }) => {
-        console.error(message);
-    });
-    player.addListener('playback_error', ({
-        message
-    }) => {
-        console.error(message);
-    });
-
-    // Playback status updates
-    player.addListener('player_state_changed', state => {
-        console.log(state);
-    });
-
-    // Ready
-    player.addListener('ready', ({
-        device_id
-    }) => {
-        console.log('Ready with Device ID', device_id);
-    });
-
-    // Not Ready
-    player.addListener('not_ready', ({
-        device_id
-    }) => {
-        console.log('Device ID has gone offline', device_id);
-    });
-
-    player.connect().then(success => {
-        if (success) {
-            console.log('The Web Playback SDK successfully connected to Spotify!');
-            let $button = $("<button>", {
-                type: "button",
-                text: "play song"
-            });
-
-            //attach listener at element creation
-            $button.on("click", function () {
-                handleStartButton();
-            });
-            $("#playback-container .col-12").append($button);
-        }
-    });
-
-}
 
 //grabs list of user's playlists and returns the .items of the request (array of the actual playlists)
 async function getPlaylists() {
