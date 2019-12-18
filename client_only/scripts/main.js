@@ -105,6 +105,7 @@ function renderPlaylists(playlists) {
         $card.append($('<span>', {
             text: playlists[i].name,
             playlist_id: playlists[i].id,
+            class: "playlist-label"
         }));
 
         $card.append($("<input>", {
@@ -117,10 +118,23 @@ function renderPlaylists(playlists) {
         }));
 
         $list.append($card);
-
     }
 
+    console.log("attaching listeners to sliders");
+    $(".slider").on("change", function () {
+        console.log($(this).val());
+
+        //user has disabled the playlist
+        if ($(this).val() == 0) {
+            $(this).parent().removeClass("active-list");
+        } else {
+            $(this).parent().addClass("active-list");
+        }
+    });
+
 }
+
+
 
 //is called in document.ready if the access token is defined
 async function loginSuccess(data) {
@@ -247,7 +261,7 @@ function playSong(spotify_uri) {
             context_uri: spotify_uri
         }),
         success: function (data) {
-            console.log("successfully played song?");
+            console.log("successfully played song");
             console.log(data);
         },
         error: function (request, status, error) {
@@ -257,6 +271,43 @@ function playSong(spotify_uri) {
 }
 
 
+async function pausePlayback() {
+    const device = $("#device-dropdown").val();
+    const pause = $.ajax({
+        url: 'https://api.spotify.com/v1/me/player/pause?device_id=' + encodeURIComponent(device),
+        type: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + access_token
+        },
+        success: function (data) {
+            console.log("successfully paused song");
+            console.log(data);
+        },
+        error: function (request, status, error) {
+            console.log("Status: " + status + ", repsonse: " + request.responseText);
+        }
+    });
+}
+
+function nextSongHandler() {
+    pausePlayback();
+    setTimeout(handleStartButton(), 300);
+}
+
+function checkStatus() {
+    const check = $.ajax({
+        url: 'https://api.spotify.com/v1/me/player',
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + access_token
+        },
+        success: function (data) {
+            console.log("status message: ");
+            console.log(data);
+        }
+    });
+}
+
 //populates the playbar at the bottom of the page with device list, play button, etc
 function populatePlayBar() {
     populateDevices();
@@ -264,12 +315,30 @@ function populatePlayBar() {
     //add playbutton
     let $button = $("<button>", {
         type: "button",
-        text: "play song"
+        text: "start playlist mix"
     });
-
     //attach listener at element creation
     $button.on("click", function () {
         handleStartButton();
+    });
+    $("#playback-container .col-12").append($button);
+
+
+    $button = $("<button>", {
+        type: "button",
+        text: "pause song"
+    });
+    $button.on("click", function () {
+        pausePlayback();
+    });
+    $("#playback-container .col-12").append($button);
+
+    $button = $("<button>", {
+        type: "button",
+        text: "next song"
+    });
+    $button.on("click", function () {
+        nextSongHandler();
     });
     $("#playback-container .col-12").append($button);
 }

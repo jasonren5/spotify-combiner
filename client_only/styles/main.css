@@ -40,9 +40,22 @@ div#userprofile {
     width: 100%;
 }
 
+.active-list {
+    background-color: rgba(255, 79, 144, 0.685);
+    color: white;
+}
+
 .slider {
     float: right;
+    position: relative;
+    top: 15px;
 }
+
+.playlist-label {
+    margin-left: 20px;
+}
+
+
 
 
 /*playback bar */
@@ -55,6 +68,8 @@ div#playback-container {
     color: white;
     text-align: center;
     height: 80px;
+
+    padding-top: 15px;
 }
 
 /*hackish stuff to prevent footer from overlapping content */
