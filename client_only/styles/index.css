@@ -1,0 +1,14 @@
+body {
+    text-align: center;
+    height: 100vh;
+}
+
+div#not-logged-in {
+    margin-top: 20%;
+}
+
+#login-button {
+    background-color: transparent;
+    color: rgb(255, 79, 144);
+    border-color: rgb(255, 79, 144);
+}

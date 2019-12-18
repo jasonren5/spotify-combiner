@@ -6,14 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="styles/core.css">
+    <link rel="stylesheet" href="styles/main.css">
     <title>spotify-easy-dj</title>
-
-
 </head>
 
 <body>
-    <h1> main app</h1>
+
     <div id="not-logged-in">
+        <h1> main app</h1>
         <h1>Error: please log in again</h1>
     </div>
 
@@ -21,9 +23,14 @@
         <div class="container">
 
             <!--header bar-->
-            <div class="row">
+            <div class="row" id="user-info-container">
                 <div class="col-12">
+                    <h1 id="logo-text">spotify-easy-dj</h1>
                     <div id="userprofile">
+
+                        <div id="profile-picture-container">
+
+                        </div>
                         <!-- this will be filled in with javascript, intentionally left blank -->
                         <p id="display-name">test name</p>
                     </div>
@@ -31,6 +38,10 @@
             </div>
 
 
+            <!-- Originally I was planning on having the user first add which playlists they wanted to play from,
+                    and then do the whole ratio thing -->
+
+            <!-- Placeholder
             <div class="row" id="mixer">
                 <div class="col-4">
                     <p>test</p>
@@ -43,22 +54,24 @@
                 </div>
             </div>
 
+            -->
+
             <!--list of all playlists. First col is name and picture, second col is add to mixer button-->
             <div id="all-list" class="row">
-                <div class="list col-10">
+                <div class="list col-12">
                     <p>test</p>
                 </div>
-                <div id="add-to-col" class="col-2">
-                    <p>test</p>
-                </div>
+            </div>
 
+            <div id="playback-container" class="row">
+                <div class="col-12">
+
+                </div>
             </div>
 
 
         </div>
     </div>
-
-
 
 
 
@@ -74,6 +87,8 @@
     </script>
 
 
+    <!-- additional api needed for spotify webplayer -->
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
     <script src="scripts/core.js"></script>
     <script src="scripts/main.js"></script>
 </body>

@@ -8,3 +8,5 @@ Spotify scopes used:
     * Needed to get list of user's playlists.
 * user-read-private
     * needed to check user's Spotify subscription, as the app only works with Spotify Premium subscribers.
+* user-read-email
+    * needed for Web Player SDK (they use it to check premium subscription)

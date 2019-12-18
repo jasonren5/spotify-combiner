@@ -1,10 +1,10 @@
-console.log("loaded index.js");
+/* primary script file for main.html */
 
 
-$("#login-button").click(function(event) {
+$("#login-button").click(function (event) {
     event.preventDefault();
     console.log("button click");
-    let scope = 'streaming user-read-playback-state playlist-read-collaborative user-read-private';
+    let scope = 'streaming user-read-playback-state playlist-read-collaborative user-read-email user-read-private';
     let redirect_uri = window.location.href + "main.html";
     console.log(redirect_uri);
 

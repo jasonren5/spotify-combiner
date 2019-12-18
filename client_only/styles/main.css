@@ -1,0 +1,63 @@
+/* USER PROFILE BAR */
+div#user-info-container {
+    padding-top: 20px;
+    margin-bottom: 50px;
+}
+
+p#display-name {
+    display: inline-block;
+    margin-bottom: 0px;
+    position: relative;
+    bottom: 13px;
+    color: white;
+    margin-right: 20px;
+    padding-left: 5px;
+}
+
+#profile-picture-container {
+    max-height: 40px;
+    width: 40px;
+    display: inline-block;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+#profile-picture {
+    max-width: 100%;
+
+}
+
+div#userprofile {
+    float: right;
+}
+
+#logo-text {
+    display: inline-block;
+}
+
+/*PLAYLIST CARDS */
+.playlist-card {
+    width: 100%;
+}
+
+.slider {
+    float: right;
+}
+
+
+/*playback bar */
+div#playback-container {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #444;
+    color: white;
+    text-align: center;
+    height: 80px;
+}
+
+/*hackish stuff to prevent footer from overlapping content */
+body {
+    margin-bottom: 80px;
+}
