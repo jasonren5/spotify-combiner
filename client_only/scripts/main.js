@@ -5,7 +5,7 @@ $(document).ready(function () {
     //waits for playback sdk to be ready... there is probably a better spot for this
     window.onSpotifyWebPlaybackSDKReady = () => {
         let params = getHashParams();
-        console.log(params);
+        //console.log(params);
         access_token = params.access_token;
 
         //if user is not logged in, access token is false
@@ -67,10 +67,8 @@ function populateDevices() {
 
     //successfully grabbed devices list
     result.done(function (data) {
-        console.log(data);
         let $dropdown = $("#device-dropdown");
         data.devices.forEach(function (device) {
-            console.log(device);
             $dropdown.append($("<option>", {
                 value: device.id,
                 text: device.name
@@ -120,7 +118,6 @@ function renderPlaylists(playlists) {
         $list.append($card);
     }
 
-    console.log("attaching listeners to sliders");
     $(".slider").on("change", function () {
         console.log($(this).val());
 
@@ -146,8 +143,7 @@ async function loginSuccess(data) {
         return;
     }
     if (data.images.length > 0) {
-        //console.log("image!");
-        //console.log(data.images[0].url);
+
         $("#profile-picture-container").prepend($("<img>", {
             src: data.images[0].url,
             alt: "user profile picture",
@@ -155,18 +151,11 @@ async function loginSuccess(data) {
         }));
     }
 
-
-    //console.log("user data: ");
-    //console.log(data);
-
     //create device list
     populatePlayBar();
 
     let playlists = await getPlaylists();
-
     //now build playlists
-    //console.log("playlists: ");
-    //console.log(playlists);
     renderPlaylists(playlists);
 }
 
@@ -202,7 +191,6 @@ function calculatePlaylistWeight() {
         }
     });
 
-    console.log(active_lists);
     return active_lists;
 }
 
@@ -218,7 +206,6 @@ function handleStartButton() {
     //
     let songRand = Math.random();
     let playlistId = -1;
-    console.log(songRand);
     for (let i = 0; i < lists.length; i++) {
         if (songRand < lists[i][0]) {
             playlistId = lists[i][1];
@@ -237,7 +224,6 @@ function handleStartButton() {
     //  https://developer.spotify.com/documentation/web-api/reference/player/start-a-users-playback/
 
     let playlist = "spotify:playlist:" + playlistId;
-    console.log(playlist);
     playSong(playlist);
 
 }
@@ -247,8 +233,8 @@ function handleStartButton() {
 */
 function playSong(spotify_uri) {
     const device = $("#device-dropdown").val();
-    console.log("device id: " + device);
-    console.log("access_token: " + access_token);
+    //console.log("device id: " + device);
+    //console.log("access_token: " + access_token);
 
     const play = $.ajax({
         url: 'https://api.spotify.com/v1/me/player/play?device_id=' + encodeURIComponent(device),
@@ -315,7 +301,8 @@ function populatePlayBar() {
     //add playbutton
     let $button = $("<button>", {
         type: "button",
-        text: "start playlist mix"
+        text: "start playlist mix",
+        class: "playback-button"
     });
     //attach listener at element creation
     $button.on("click", function () {
@@ -326,7 +313,8 @@ function populatePlayBar() {
 
     $button = $("<button>", {
         type: "button",
-        text: "pause song"
+        text: "pause song",
+        class: "playback-button"
     });
     $button.on("click", function () {
         pausePlayback();
@@ -335,7 +323,8 @@ function populatePlayBar() {
 
     $button = $("<button>", {
         type: "button",
-        text: "next song"
+        text: "next song",
+        class: "playback-button"
     });
     $button.on("click", function () {
         nextSongHandler();

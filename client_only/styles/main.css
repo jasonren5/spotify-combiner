@@ -72,6 +72,21 @@ div#playback-container {
     padding-top: 15px;
 }
 
+.playback-button {
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 20%;
+    border-color: rgb(255, 79, 144);
+    background-color: transparent;
+    color: rgb(255, 79, 144);
+}
+
+select#device-dropdown {
+    background-color: #333;
+    border-color: rgb(255, 79, 144);
+    color: rgb(255, 79, 144);
+}
+
 /*hackish stuff to prevent footer from overlapping content */
 body {
     margin-bottom: 80px;
