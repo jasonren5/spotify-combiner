@@ -1,11 +1,11 @@
-#spotify-easy-dj
+# spotify-easy-dj
 
 An application that allows any Spotify Premium user to easily playback from multiple playlists without having to manage their queue.
 
 This web application can be accessed at my AWS EC2 server: http://ec2-18-191-207-59.us-east-2.compute.amazonaws.com/~jren/spotify-easy-dj/client_only/
 
 
-##Notes
+## Notes
 
 Spotify scopes used:
 * streaming
